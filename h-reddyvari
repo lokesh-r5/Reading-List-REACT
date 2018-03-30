@@ -1,0 +1,164 @@
+[33mcommit cef8efe6462178e212972f3ea11d2087766e99f6[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Lokesh Reddyvari <lokeshreddyvari5@gmail.com>
+Date:   Thu Mar 22 19:09:11 2018 -0700
+
+    Update search page settings and updateBook function
+
+[1mdiff --git a/src/App.js b/src/App.js[m
+[1mindex 6a69445..2ac1b65 100644[m
+[1m--- a/src/App.js[m
+[1m+++ b/src/App.js[m
+[36m@@ -13,37 +13,51 @@[m [mclass BooksApp extends React.Component {[m
+      * users can use the browser's back and forward buttons to navigate between[m
+      * pages, as well as provide a good URL they can bookmark and share.[m
+      */[m
+[31m-    books: [][m
+[32m+[m[32m    books: [],[m
+[32m+[m[32m    searchResults: [][m
+   }[m
+ [m
+[31m-  componentDidMount() {[m
+[32m+[m[32m  searchBooks=(query) => {[m
+[32m+[m[32m    BooksAPI.search(query).then((searchResults) => {[m
+[32m+[m[32m      this.setState({ searchResults });[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }[m
+[32m+[m[32m  getBooks=() => {[m
+     BooksAPI.getAll().then((books) => {[m
+       this.setState({ books });[m
+     });[m
+   }[m
+ [m
+[32m+[m[32m  componentDidMount() {[m
+[32m+[m[32m    this.getBooks();[m
+[32m+[m[32m  }[m
+[32m+[m
+   updateBook=(book, shelf) => {[m
+     BooksAPI.update(book, shelf);[m
+[31m-    BooksAPI.getAll().then((books) => {[m
+[31m-      console.log(books)[m
+[31m-    })[m
+[32m+[m[32m    this.getBooks();[m
+   }[m
+ [m
+[32m+[m[32m  closeSearchPage=() => this.setState({ showSearchPage: false })[m
+[32m+[m
+   render() {[m
+     return ([m
+       <BrowserRouter>[m
+[31m-      <div className="app">[m
+[31m-        <Route exact path="/search" render={ () =>  ([m
+[31m-          <SearchBooks />[m
+[31m-        )} />[m
+[31m-[m
+[31m-        <Route path="/" render={ () => ([m
+[31m-          <ListBooks[m
+[31m-          updateBook={this.updateBook}[m
+[31m-          books={this.state.books}[m
+[31m-           />[m
+[31m-        )} />[m
+[31m-      </div>[m
+[32m+[m[32m        <div className="app">[m
+[32m+[m[32m          <Route exact path="/search" render={ () =>  ([m
+[32m+[m[32m            <SearchBooks[m
+[32m+[m[32m            updateBook={this.updateBook}[m
+[32m+[m[32m            closeSearchPage={this.closeSearchPage}[m
+[32m+[m[32m            searchBooks={this.searchBooks}[m
+[32m+[m[32m            searchResults={this.state.searchResults}/>[m
+[32m+[m[32m          )} />[m
+[32m+[m
+[32m+[m[32m          <Route exact path="/" render={ () => ([m
+[32m+[m[32m            <ListBooks[m
+[32m+[m[32m            updateBook={this.updateBook}[m
+[32m+[m[32m            books={this.state.books}[m
+[32m+[m[32m             />[m
+[32m+[m[32m          )} />[m
+[32m+[m[32m        </div>[m
+       </BrowserRouter>[m
+     )[m
+   }[m
+[1mdiff --git a/src/components/list-books.js b/src/components/list-books.js[m
+[1mindex efe9bb9..f626ea4 100644[m
+[1m--- a/src/components/list-books.js[m
+[1m+++ b/src/components/list-books.js[m
+[36m@@ -1,4 +1,5 @@[m
+ import React from 'react'[m
+[32m+[m[32mimport { Link } from 'react-router-dom'[m
+ import EachBookList from './each-book-list.js'[m
+ // import WantToRead from './want-to-read.js'[m
+ // import Read from './read.js'[m
+[36m@@ -42,7 +43,9 @@[m [mfunction ListBooks(props) {[m
+         </div>[m
+       </div>[m
+       <div className="open-search">[m
+[31m-        <a onClick={() => this.setState({ showSearchPage: true })}>Add a book</a>[m
+[32m+[m[32m        <Link[m
+[32m+[m[32m          to="/search"[m
+[32m+[m[32m        >Add a book</Link>[m
+       </div>[m
+     </div>[m
+   )[m
+[1mdiff --git a/src/components/search-books.js b/src/components/search-books.js[m
+[1mindex 730e5fc..acfe9a0 100644[m
+[1m--- a/src/components/search-books.js[m
+[1m+++ b/src/components/search-books.js[m
+[36m@@ -1,31 +1,36 @@[m
+[31m-import React, { Component } from 'react';[m
+[32m+[m[32mimport React from 'react';[m
+[32m+[m[32mimport { Link } from 'react-router-dom'[m
+[32m+[m[32mimport EachBookList from './each-book-list.js'[m
+ [m
+[31m-class SearchBooks extends Component {[m
+[31m-  render() {[m
+[31m-    return ([m
+[31m-      <div className="search-books">[m
+[31m-        <div className="search-books-bar">[m
+[31m-          <a className="close-search" onClick={() => this.setState({ showSearchPage: false })}>Close</a>[m
+[31m-          <div className="search-books-input-wrapper">[m
+[31m-            {/*[m
+[31m-              NOTES: The search from BooksAPI is limited to a particular set of search terms.[m
+[31m-              You can find these search terms here:[m
+[31m-              https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md[m
+ [m
+[31m-              However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if[m
+[31m-              you don't find a specific author or title. Every search is limited by search terms.[m
+[31m-            */}[m
+[31m-            <input type="text" placeholder="Search by title or author"/>[m
+[32m+[m[32mfunction  SearchBooks(props) {[m
+[32m+[m[32m  const updateBook=(book, shelf) => {[m
+[32m+[m[32m    props.updateBook(book, shelf);[m
+[32m+[m[32m  }[m
+ [m
+[31m-          </div>[m
+[31m-        </div>[m
+[31m-        <div className="search-books-results">[m
+[31m-          <ol className="books-grid"></ol>[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <div className="search-books">[m
+[32m+[m[32m      <div className="search-books-bar">[m
+[32m+[m[32m        <Link to='/' className="close-search">Close</Link>[m
+[32m+[m[32m        <div className="search-books-input-wrapper">[m
+[32m+[m[32m          {/*[m
+[32m+[m[32m            NOTES: The search from BooksAPI is limited to a particular set of search terms.[m
+[32m+[m[32m            You can find these search terms here:[m
+[32m+[m[32m            https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md[m
+[32m+[m
+[32m+[m[32m            However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if[m
+[32m+[m[32m            you don't find a specific author or title. Every search is limited by search terms.[m
+[32m+[m[32m          */}[m
+[32m+[m[32m          <input type="text" placeholder="Search by title or author" onChange={(e)=>props.searchBooks(e.value)}/>[m
+         </div>[m
+       </div>[m
+[31m-    )[m
+[31m-[m
+[31m-  }[m
+[32m+[m[32m      <div className="search-books-results">[m
+[32m+[m[32m        <EachBookList[m
+[32m+[m[32m        onShelfSelection={updateBook}[m
+[32m+[m[32m        books={props.searchResults}/>[m
+[32m+[m[32m      </div>[m
+[32m+[m[32m    </div>[m
+[32m+[m[32m  )[m
+ }[m
+ [m
+ export default SearchBooks[m
