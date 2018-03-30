@@ -8,6 +8,8 @@ function  SearchBooks(props) {
     props.updateBook(book, shelf);
   }
 
+  console.log(props.searchResults);
+
   return (
     <div className="search-books">
       <div className="search-books-bar">

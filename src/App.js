@@ -18,10 +18,29 @@ class BooksApp extends React.Component {
   }
 
   searchBooks=(query) => {
-    BooksAPI.search(query).then((searchResults) => {
-      console.log(searchResults);
-      this.setState({ searchResults });
-    });
+    if(query === ""){
+      this.setState({ searchResults: [] });
+    } else {
+      BooksAPI.search(query).then((searchResults) => {
+        if(searchResults.length>0) {
+          searchResults.map((book) => {
+            if(!book.authors) {
+              book.authors = [];
+            }
+            if(!book.imageLinks) {
+              book.imageLinks = {};
+              if(!book.imageLinks.thumbnail) {
+                book.imageLinks.thumbnail = "";
+              }
+            }
+          });
+          this.setState({ searchResults });
+        }
+        else {
+          this.setState({searchResults: []});
+        }
+      });
+    }
   }
   getBooks=() => {
     BooksAPI.getAll().then((books) => {
