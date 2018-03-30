@@ -32,7 +32,8 @@ export const update = (book, shelf) =>
     body: JSON.stringify({ shelf })
   }).then(res => res.json())
 
-export const search = (query) =>
+export const search = (query) =>{
+  console.log(query+"--   in booksAPI")
   fetch(`${api}/search`, {
     method: 'POST',
     headers: {
@@ -41,4 +42,4 @@ export const search = (query) =>
     },
     body: JSON.stringify({ query })
   }).then(res => res.json())
-    .then(data => data.books)
+    .then(data => data.books)}
