@@ -53,8 +53,7 @@ class BooksApp extends React.Component {
   }
 
   updateBook=(book, shelf) => {
-    BooksAPI.update(book, shelf);
-    this.getBooks();
+    BooksAPI.update(book, shelf).then(response => this.getBooks());
   }
 
   closeSearchPage=() => this.setState({ showSearchPage: false })
