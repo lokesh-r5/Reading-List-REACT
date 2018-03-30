@@ -1,8 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import EachBookList from './each-book-list.js'
-// import WantToRead from './want-to-read.js'
-// import Read from './read.js'
 
 function ListBooks(props) {
   const currentlyReading=props.books.filter(book => book.shelf ==="currentlyReading");
