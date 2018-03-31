@@ -34,6 +34,18 @@ class BooksApp extends React.Component {
               }
             }
           });
+
+          searchResults.map((searchBook) => {
+            this.state.books.forEach((book) => {
+              if(searchBook.id === book.id) {
+                searchBook.shelf = book.shelf;
+              }
+            });
+            if(searchBook.shelf === undefined) {
+              searchBook.shelf = "none";
+            }
+          });
+
           this.setState({ searchResults });
         }
         else {
@@ -67,7 +79,8 @@ class BooksApp extends React.Component {
             updateBook={this.updateBook}
             closeSearchPage={this.closeSearchPage}
             searchBooks={this.searchBooks}
-            searchResults={this.state.searchResults}/>
+            searchResults={this.state.searchResults}
+            books={this.state.books}/>
           )} />
 
           <Route exact path="/" render={ () => (
