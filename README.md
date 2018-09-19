@@ -1,6 +1,6 @@
 # Reading List using REACT
 
-This is a REACT project crated as part of Udacity React Nanodegree course. The goal of this project is to create a REACT web application.
+Bookshelf app that allows user to select and categorize books they read, are currently reading, or want to read. This project is to emphasize using React to build the application and provides an API server and client library that will be used to persist information as user interact with the application.
 
 ## Installation:
 
